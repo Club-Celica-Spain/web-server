@@ -1,0 +1,72 @@
+version: "3.7"
+
+services:
+  nginx-php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nginx-php5-unprivileged:latest
+    container_name: nginx-php
+    restart: always
+    networks:
+      - lan
+      - wan
+    ports:
+      - "8080:8080"
+    volumes:
+      # Sets the timezone of the host to the container
+      - /etc/localtime:/etc/localtime:ro
+      # Content to serve
+      - /srv/www/html:/srv/www/html
+      # Club Celica España server definition config
+      - ./config/nginx-clubcelica.conf:/etc/nginx/conf.d/nginx-clubcelica.conf
+      # NGINX logs (general)
+      - /var/log/nginx/access-general.log:/var/log/nginx/access-general.log
+      - /var/log/nginx/error-general.log:/var/log/nginx/error-general.log
+      # NGINX logs (Club Celica España)
+      - /var/log/nginx/access-clubcelica.log:/var/log/nginx/access-clubcelica.log
+      - /var/log/nginx/error-clubcelica.log:/var/log/nginx/error-clubcelica.log
+      # PHP-FPM logs (general)
+      - /var/log/php-fpm/error.log:/var/log/php-fpm/error.log
+    labels:
+      traefik.enable: "true"
+      # Network to use
+      traefik.docker.network: "wan"
+      # Add middleware
+      traefik.http.routers.nginx-php.middlewares: "security@file"
+      # Use client headers
+      traefik.frontend.passHostHeader: "true"
+      # HTTP (UI)
+      traefik.http.routers.nginx-php.rule: "Host(`foro.clubcelica.es`)"
+      traefik.http.routers.nginx-php.tls.certresolver: "le"
+      traefik.http.routers.nginx-php.entrypoints: "websecure"
+      traefik.http.routers.nginx-php.service: "nginx-php"
+      # Ports to expose
+      traefik.http.services.nginx-php.loadbalancer.server.port: "8080"
+
+  backup:
+    build:
+      context: ./custom
+      dockerfile: Dockerfile-backup
+    container_name: www-backup
+    restart: always
+    networks:
+      - lan
+    volumes:
+      # Sets the timezone of the host to the container
+      - /etc/localtime:/etc/localtime:ro
+      # Mounts www folder inside the container
+      - /srv/www:/srv/www/html
+      # Copy backup to host
+      - /srv/backup/www:/srv/backup/www
+    command: crond -f -d 8
+    labels:
+      traefik.enable: "false"
+    depends_on:
+      - nginx-php
+
+networks:
+  lan:
+    external: true
+  wan:
+    external: true

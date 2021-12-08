@@ -1,0 +1,7 @@
+FROM alpine:3.15
+
+COPY ./scripts/daily/* /etc/periodic/daily
+
+RUN apk update && \
+  apk upgrade && \
+  chmod a+x /etc/periodic/daily/*

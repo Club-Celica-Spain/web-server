@@ -1,42 +1,44 @@
-FROM alpine:3.8
+FROM alpine:3.14
 LABEL Maintainer="github.com/xaabi6"
-LABEL Description="Lightweight container with Nginx 1.14.2 & PHP 5.6.40 based on Alpine Linux."
+LABEL Description="Lightweight container with Nginx 1.20 & PHP 7.4 based on Alpine Linux."
 
 # Install packages and remove default server definition
 RUN apk --no-cache add \
 	curl \
 	nginx \
-	php5 \
-	php5-bcmath \
-	php5-bz2 \
-	php5-ctype \
-	php5-curl \
-	php5-pdo \
-	php5-pdo_mysql \
-	php5-dom \
-	php5-exif \
-	php5-fpm \
-	php5-gd \
-	php5-gettext \
-	php5-intl \
-	php5-json \
-	php5-mysqli \
-	php5-opcache \
-	php5-openssl \
-	php5-phar \
-	php5-xml \
-	php5-xmlreader \
-	php5-zlib \
+	php7 \
+	php7-bcmath \
+	php7-bz2 \
+	php7-ctype \
+	php7-curl \
+	php7-pdo \
+	php7-pdo_mysql \
+	php7-dom \
+	php7-exif \
+	php7-fpm \
+	php7-fileinfo \
+	php7-gd \
+	php7-gettext \
+	php7-intl \
+	php7-json \
+	php7-mbstring \
+	php7-mysqli \
+	php7-opcache \
+	php7-openssl \
+	php7-phar \
+	php7-session \
+	php7-xml \
+	php7-xmlreader \
+	php7-zlib \
 	supervisor \
 	aspell
 
 # Configure nginx
 COPY ./config/nginx.conf /etc/nginx/nginx.conf
-RUN rm /etc/nginx/conf.d/default.conf
 
 # Configure PHP-FPM
-COPY ./config/fpm-pool.conf /etc/php5/fpm.d/www.conf
-COPY ./config/php.ini /etc/php5/conf.d/custom.ini
+COPY ./config/fpm-pool.conf /etc/php7/php-fpm.d/www.conf
+COPY ./config/php.ini /etc/php7/conf.d/custom.ini
 
 # Configure supervisord
 COPY ./config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
@@ -50,7 +52,7 @@ RUN mkdir -p /srv/www/html \
 RUN chown -R nobody.nobody /srv/www/html && \
 	chown -R nobody.nobody /run && \
 	chown -R nobody.nobody /var/lib/nginx && \
-	chown -R nobody.nobody /var/log && \
+	chown -R nobody.nobody /var/log/nginx && \
 	chown -R nobody.nobody /tmp
 
 # Switch to use a non-root user from here on

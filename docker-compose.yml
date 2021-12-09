@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: nginx-php5-unprivileged:latest
+    image: nginx-php7-unprivileged:latest
     container_name: nginx-php
     restart: always
     networks:

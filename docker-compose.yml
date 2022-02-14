@@ -33,7 +33,7 @@ services:
       # Network to use
       traefik.docker.network: "wan"
       # Add middleware
-      traefik.http.routers.nginx-php.middlewares: "security@file"
+      traefik.http.routers.nginx-php.middlewares: "compression@file, security@file"
       # Use client headers
       traefik.frontend.passHostHeader: "true"
       # HTTP (UI)

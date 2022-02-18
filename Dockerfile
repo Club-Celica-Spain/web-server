@@ -1,9 +1,10 @@
-FROM alpine:3.14
+ARG ALPINE_VERSION=3.14
+FROM alpine:${ALPINE_VERSION}
 LABEL Maintainer="github.com/xaabi6"
 LABEL Description="Lightweight container with Nginx 1.20 & PHP 7.4 based on Alpine Linux."
 
 # Install packages and remove default server definition
-RUN apk --no-cache add \
+RUN apk add --no-cache \
 	curl \
 	nginx \
 	php7 \
@@ -49,11 +50,7 @@ RUN mkdir -p /srv/www/html \
 	mkdir -p /tmp/upload
 
 # Make sure files/folders needed by the processes are accessable when they run under the nobody user
-RUN chown -R nobody.nobody /srv/www/html && \
-	chown -R nobody.nobody /run && \
-	chown -R nobody.nobody /var/lib/nginx && \
-	chown -R nobody.nobody /var/log/nginx && \
-	chown -R nobody.nobody /tmp
+RUN chown -R nobody.nobody /srv/www/html /run /var/lib/nginx /var/log/nginx /tmp
 
 # Switch to use a non-root user from here on
 USER nobody

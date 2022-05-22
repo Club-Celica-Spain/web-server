@@ -12,7 +12,7 @@ services:
       - lan
       - wan
     ports:
-      - "8080:8080"
+      - "7080:7080"
     volumes:
       # Sets the timezone of the host to the container
       - /etc/localtime:/etc/localtime:ro
@@ -42,7 +42,7 @@ services:
       traefik.http.routers.nginx-php.entrypoints: "websecure"
       traefik.http.routers.nginx-php.service: "nginx-php"
       # Ports to expose
-      traefik.http.services.nginx-php.loadbalancer.server.port: "8080"
+      traefik.http.services.nginx-php.loadbalancer.server.port: "7080"
 
   backup:
     build:
